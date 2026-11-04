@@ -1,0 +1,5 @@
+# Configuração inicial do RaidCraft MVP.
+# Geradores persistidos automaticamente em plugins/RaidCraft/generators.yml.
+# Em versões futuras: raids, tiers de progressão e integração com painel web.
+messages:
+  prefix: "[RaidCraft] "

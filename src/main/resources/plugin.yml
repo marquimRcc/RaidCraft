@@ -1,0 +1,16 @@
+name: RaidCraft
+version: '0.1.0'
+main: dev.raidcraft.RaidCraftPlugin
+api-version: '1.21.11'
+description: Protótipo de geradores de minério para Minecraft Paper.
+author: RaidCraft Team
+commands:
+  raidcraft:
+    description: Gerencia geradores de minérios personalizados.
+    usage: /raidcraft help
+    aliases: [rc]
+    permission: raidcraft.admin
+permissions:
+  raidcraft.admin:
+    description: Permite criar, listar, recarregar e remover geradores.
+    default: op
