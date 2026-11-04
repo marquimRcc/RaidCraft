@@ -2,7 +2,7 @@
 
 Protótipo open-source de geradores de minério configuráveis para **Paper 1.21.11**, feito em **Java 21** e **Gradle**.
 
-> **Estado:** código-fonte inicial publicado. Compilação com Paper API e testes dentro do Minecraft ainda pendentes. O painel HTML é uma demonstração visual offline e **não** controla o servidor.
+> **Estado:** código compilado e empacotado em CI; integração automatizada aprovada em um servidor **Paper 1.21.11 real** com jogador simulado. A homologação manual com cliente Minecraft conectado continua pendente. O painel HTML é uma demonstração visual offline e **não** controla o servidor.
 
 ## Objetivo
 
@@ -74,9 +74,21 @@ A permissão `raidcraft.admin` é padrão para operadores (OP).
 
 Os geradores são salvos em `plugins/RaidCraft/generators.yml`. O painel `painel-demo.html` pode ser aberto no navegador, sem dependências, para ilustrar a configuração.
 
+## Verificações automatizadas
+
+A pipeline usa Java 21 e Gradle, verifica os arquivos e o bytecode do JAR e executa um segundo plugin, **exclusivo para CI**, em um servidor Paper 1.21.11 temporário.
+
+O teste `Paper Runtime Smoke` validou a inicialização do RaidCraft, criação de um gerador DIAMOND, drop de exatamente 2 diamantes, proteção contra duplicidade, regeneração, persistência YAML, recarga e remoção.
+
+- [Execução de integração aprovada em 04/11/2026](https://github.com/marquimRcc/RaidCraft/actions/runs/41830787161)
+- [Código do teste e suas limitações](smoke/README.md)
+- [Plano de testes manuais ainda necessários](TEST_PLAN.md)
+
+A execução usa um `Player` simulado no lado do servidor. Não testa conectividade e interação real de cliente Minecraft, permissões de jogadores reais, compatibilidade com plugins externos nem múltiplos jogadores.
+
 ## Limitações conhecidas
 
-- **Ainda não compilado ou testado no Paper.** Não anunciar como plugin homologado.
+- **Compilação e smoke test automatizado aprovados, mas ainda não homologado com um cliente Minecraft real.** Não anunciar como plugin integralmente homologado.
 - O cooldown em andamento não é persistido após reinício.
 - O armazenamento é YAML local para pequenos servidores; não é indicado para milhares de geradores sem melhorias.
 - A regeneração usa substituição temporária por bedrock. Fortune e Silk Touch não alteram o drop.

@@ -1,0 +1,106 @@
+name: Paper Runtime Smoke
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  paper-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Configure Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14'
+
+      - name: Build RaidCraft and test plugin
+        run: |
+          gradle --no-daemon clean build
+          gradle -p smoke --no-daemon clean build
+
+      - name: Download and verify stable Paper 1.21.11
+        shell: bash
+        run: |
+          set -euo pipefail
+          UA="RaidCraft-CI/0.1 (https://github.com/marquimRcc/RaidCraft)"
+          response=$(curl --fail --silent --show-error --location --retry 3 \
+            -H "User-Agent: $UA" \
+            "https://fill.papermc.io/v3/projects/paper/versions/1.21.11/builds")
+          paper_url=$(jq -er 'first(.[] | select(.channel == "STABLE") | .downloads."server:default".url)' <<< "$response")
+          paper_sha=$(jq -er 'first(.[] | select(.channel == "STABLE") | .downloads."server:default".checksums.sha256)' <<< "$response")
+          mkdir -p build/paper-smoke/plugins
+          curl --fail --silent --show-error --location --retry 3 --max-time 180 \
+            -H "User-Agent: $UA" -o build/paper-smoke/paper.jar "$paper_url"
+          echo "$paper_sha  build/paper-smoke/paper.jar" | sha256sum -c -
+          cp build/libs/RaidCraft-0.1.0.jar build/paper-smoke/plugins/
+          cp smoke/build/libs/RaidCraft-Smoke.jar build/paper-smoke/plugins/
+          printf 'eula=true\n' > build/paper-smoke/eula.txt
+          printf 'online-mode=false\nmax-players=1\nview-distance=3\nsimulation-distance=3\n' > build/paper-smoke/server.properties
+
+      - name: Start Paper and assert generator behavior
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd build/paper-smoke
+          java -Xms512M -Xmx2G -jar paper.jar --nogui >paper.log 2>&1 &
+          pid=$!
+          cleanup() {
+            kill "$pid" 2>/dev/null || true
+            wait "$pid" 2>/dev/null || true
+          }
+          trap cleanup EXIT
+          for i in $(seq 1 240); do
+            if grep -q 'RAIDCRAFT_SMOKE_PASS:' paper.log; then
+              echo "Paper integration smoke test passed"
+              grep 'RAIDCRAFT_SMOKE_' paper.log
+              exit 0
+            fi
+            if grep -q 'RAIDCRAFT_SMOKE_FAIL:' paper.log; then
+              echo "Paper integration smoke test failed"
+              tail -n 160 paper.log
+              exit 1
+            fi
+            if ! kill -0 "$pid" 2>/dev/null; then
+              echo "Paper server stopped before smoke test finished"
+              tail -n 160 paper.log
+              exit 1
+            fi
+            sleep 2
+          done
+          echo "Paper integration smoke test timed out"
+          tail -n 160 paper.log
+          exit 1
+
+      - name: Upload Paper logs if test fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: paper-runtime-smoke-logs
+          path: build/paper-smoke/logs/
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Upload live server log if test fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: paper-runtime-smoke-console
+          path: build/paper-smoke/paper.log
+          if-no-files-found: ignore
+          retention-days: 7

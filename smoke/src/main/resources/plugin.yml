@@ -1,0 +1,6 @@
+name: RaidCraftSmoke
+version: '0.1.0'
+main: dev.raidcraft.smoke.RaidCraftSmokePlugin
+api-version: '1.21.11'
+description: Temporary CI-only smoke test for RaidCraft.
+depend: [RaidCraft]

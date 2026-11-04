@@ -8,13 +8,15 @@
 ## P1 — MVP de minério
 - [x] Criar comandos, service, listener, enum de minérios e repositório YAML.
 - [x] Criar painel HTML5 interativo offline.
-- [ ] Compilar efetivamente com dependências Paper.
-- [ ] Corrigir quaisquer erros detectados pela compilação.
-- [ ] Validar comportamento no jogo conforme TEST_PLAN.md.
+- [x] Compilar e empacotar com dependências Paper em CI (Java 21).
+- [x] Validar estrutura do JAR e bytecode Java 21.
+- [x] Executar smoke test de geradores dentro de um servidor Paper 1.21.11 real.
+- [ ] Concluir homologação manual com cliente Minecraft conforme TEST_PLAN.md.
 
 ## P2 — Demonstração Minecraft
-- [ ] Preparar sandbox Paper 1.21.11 e aceitar EULA.
-- [ ] Criar gerador DIAMOND com 2 diamantes e cooldown de 30s.
+- [x] Preparar servidor Paper 1.21.11 efêmero no GitHub Actions para smoke test.
+- [x] Validar no servidor um gerador DIAMOND com drop de 2 itens e cooldown de 2s (CI).
+- [ ] Criar no cliente Minecraft um gerador DIAMOND com 2 diamantes e cooldown de 30s.
 - [ ] Verificar integridade de drops, reinícios e multiplayer.
 - [ ] Registrar vídeo curto mostrando bloco exibido e item recebido.
 
@@ -34,4 +36,4 @@
 - [ ] Integrar o painel sem expor comandos administrativos.
 - [ ] Persistência robusta, backup, observabilidade e métricas.
 
-**Importante:** elementos marcados como código implementado não equivalem a aprovação em testes de integração.
+**Evidência de integração:** [Paper Runtime Smoke aprovado](https://github.com/marquimRcc/RaidCraft/actions/runs/41830787161). Esse teste cobre eventos Bukkit com jogador simulado, não substitui cliente conectado, multiplayer nem testes de plugins externos.

@@ -1,6 +1,12 @@
 # Homologação manual — RaidCraft MVP
 
-Marcar como concluído somente após executar em servidor Paper 1.21.11.
+Os itens abaixo são para a **homologação manual com cliente Minecraft conectado**. Não marcá-los como concluídos com base somente no CI.
+
+### Verificações automáticas já aprovadas
+
+Em 04/11/2026, a [execução Paper Runtime Smoke](https://github.com/marquimRcc/RaidCraft/actions/runs/41830787161) validou dentro de um Paper 1.21.11 real: habilitação do plugin, criação de gerador, persistência, evento de mineração com jogador simulado, dois diamantes reais, proteção contra duplicidade, cooldown, reload e remoção.
+
+### Checklist manual
 
 - [ ] `gradle clean build` conclui usando JDK 21.
 - [ ] JAR instala e `/plugins` exibe RaidCraft sem stacktrace.
@@ -20,4 +26,4 @@ Marcar como concluído somente após executar em servidor Paper 1.21.11.
 - [ ] Verificar coexistência com plugins de proteção de terreno/claims.
 - [ ] Painel HTML5 abre no navegador e apresenta uma simulação interativa.
 
-**Status:** nenhuma homologação Paper/Minecraft executada até o momento.
+**Status:** smoke test automático em Paper concluído; homologação manual com cliente Minecraft conectado pendente.
