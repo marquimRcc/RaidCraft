@@ -1,0 +1,37 @@
+name: Build RaidCraft
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14'
+      - name: Build and verify
+        run: gradle --no-daemon clean build
+      - name: Upload plugin JAR
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: RaidCraft-plugin
+          path: build/libs/RaidCraft-*.jar
+          if-no-files-found: error
+          retention-days: 14
