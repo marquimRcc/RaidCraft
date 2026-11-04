@@ -19,7 +19,7 @@ Estes scripts preparam **Paper 1.21.11 + RaidCraft** no próprio computador, usa
 No terminal, **após o PR do instalador estar na main**, execute:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/marquimRcc/RaidCraft/main/scripts/preparar-raidcraft-lab.sh -o /tmp/preparar-raidcraft-lab.sh; bash /tmp/preparar-raidcraft-lab.sh --accept-eula --start
+curl -fsSL https://raw.githubusercontent.com/marquimRcc/RaidCraft/main/scripts/preparar-raidcraft-lab.sh -o /tmp/preparar-raidcraft-lab.sh && bash /tmp/preparar-raidcraft-lab.sh --accept-eula --start
 ```
 
 **Observação:** a segunda parte aceita a EULA expressamente. Retire `--accept-eula --start` para apenas preparar os arquivos sem aceitar ou iniciar o servidor.
@@ -29,7 +29,7 @@ curl -fsSL https://raw.githubusercontent.com/marquimRcc/RaidCraft/main/scripts/p
 No PowerShell, **após o PR do instalador estar na main**:
 
 ```powershell
-$p="$env:TEMP\Preparar-RaidCraft-Lab.ps1"; Invoke-WebRequest "https://raw.githubusercontent.com/marquimRcc/RaidCraft/main/scripts/Preparar-RaidCraft-Lab.ps1" -OutFile $p; powershell.exe -NoProfile -ExecutionPolicy Bypass -File $p -AcceptEula -Start
+$ErrorActionPreference="Stop"; $p="$env:TEMP\Preparar-RaidCraft-Lab.ps1"; Invoke-WebRequest "https://raw.githubusercontent.com/marquimRcc/RaidCraft/main/scripts/Preparar-RaidCraft-Lab.ps1" -OutFile $p; powershell.exe -NoProfile -ExecutionPolicy Bypass -File $p -AcceptEula -Start
 ```
 
 Retire `-AcceptEula -Start` para preparar os arquivos sem aceitar os termos ou iniciar o servidor. O script criado localmente pode ser revisado antes da execução.
