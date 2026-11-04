@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RaidCraft — Generator Manager (Demo)</title>
+<style>
+:root{font-family:Inter,system-ui,Arial,sans-serif;color:#e8edf5;background:#0b1120}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 90% 0,#173457 0,transparent 33%),#0b1120}
+header{border-bottom:1px solid #293b50;padding:20px max(22px,calc((100% - 1050px)/2));display:flex;justify-content:space-between;align-items:center}
+.brand{font-weight:800;letter-spacing:.3px;font-size:1.3rem}.small{color:#9fb3c8;font-size:.86rem}
+.tag{background:#145b48;border:1px solid #2ea77c;border-radius:99px;padding:6px 12px;font-size:.82rem;color:#c8f5de}
+main{max-width:1050px;margin:0 auto;padding:30px 22px}h1{margin:0;font-size:2rem}p{color:#9fb3c8}
+.grid{display:grid;grid-template-columns:1.05fr .95fr;gap:20px;margin-top:22px}
+@media(max-width:800px){.grid{grid-template-columns:1fr}}
+.card{background:#141f30;border:1px solid #2a4059;border-radius:16px;padding:24px;box-shadow:0 14px 35px #050a1230}
+.card h2{margin-top:0;font-size:1.13rem}label{display:block;margin:15px 0 6px;color:#b7cadc;font-size:.9rem}
+input,select{width:100%;background:#0c1727;border:1px solid #38516c;color:#e8edf5;border-radius:9px;padding:12px;font:inherit}
+input:focus,select:focus{outline:2px solid #3ca8e8}.two{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+button{border:0;padding:12px 16px;border-radius:9px;background:#2b93cb;color:#fff;font-weight:700;cursor:pointer;margin-top:17px}
+button:hover{background:#42a9de}button.alt{background:#263a50;margin-left:8px}
+.mining{background:linear-gradient(135deg,#172b36,#15243b);min-height:155px;border:1px solid #34516b;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px}
+.block{width:74px;height:74px;image-rendering:pixelated;display:grid;place-items:center;font-size:2.7rem;background:repeating-linear-gradient(45deg,#54606e,#54606e 14px,#465160 14px,#465160 25px);border:6px ridge #68778a;box-shadow:8px 8px 0 #080e19}
+.block.cool{filter:grayscale(1);opacity:.55}.result{margin:15px 0;background:#0b1828;padding:14px;border:1px solid #2a4059;border-radius:9px;min-height:55px}
+pre{white-space:pre-wrap;word-break:break-word;padding:15px;background:#0b1828;color:#8cddab;border-radius:9px}
+footer{max-width:1050px;margin:0 auto;padding:10px 22px 35px;color:#8a9db5;font-size:.83rem}
+</style>
+</head>
+<body>
+<header><span class="brand">⛏ RaidCraft <span class="small">/ Generator Manager</span></span><span class="tag">DEMO OFFLINE</span></header>
+<main>
+<h1>Controle seus geradores</h1>
+<p>Simule um gerador real de Minecraft: escolha o minério, a quantidade e o tempo de regeneração. Esta tela não está conectada ao servidor Paper.</p>
+<div class="grid">
+<section class="card">
+<h2>⚙️ Configurar gerador</h2>
+<label for="id">ID do gerador</label><input id="id" value="diamond01" maxlength="32">
+<label for="ore">Minério</label>
+<select id="ore">
+<option value="DIAMOND">💎 Diamante</option><option value="EMERALD">🟢 Esmeralda</option><option value="IRON">⚙️ Ferro</option>
+<option value="GOLD">🟨 Ouro</option><option value="COPPER">🟠 Cobre</option><option value="COAL">⬛ Carvão</option>
+<option value="REDSTONE">🔴 Redstone</option><option value="LAPIS">🔵 Lápis-lazúli</option><option value="QUARTZ">⚪ Quartzo</option>
+</select>
+<div class="two">
+<div><label for="amount">Itens por mineração</label><input id="amount" type="number" min="1" max="64" value="2"></div>
+<div><label for="cooldown">Regeneração (s)</label><input id="cooldown" type="number" min="1" max="3600" value="30"></div>
+</div>
+<button id="configure">Aplicar configuração</button><button id="reset" class="alt">Restaurar</button>
+<h2 style="margin-top:28px">Comando gerado</h2><pre id="command">/rc create diamond01 DIAMOND 2 30</pre>
+</section>
+<section class="card">
+<h2>🧱 Simulação no Minecraft</h2>
+<div class="mining"><div class="block" id="block">💎</div><strong id="blockname">DIAMOND_ORE</strong></div>
+<button id="mine">⛏ Minerar bloco</button>
+<div class="result" role="status" aria-live="polite" id="result">Pronto para minerar.</div>
+<h2>O que o plugin fará?</h2>
+<p id="behavior">Entregar 2 diamantes quando o jogador quebrar o minério; regenerar após 30 segundos.</p>
+<p class="small">Na demonstração, a regeneração é simulada sem esperar o tempo inteiro. No plugin, o scheduler de Paper utiliza o intervalo real.</p>
+</section>
+</div>
+</main>
+<footer>RaidCraft MVP • Protótipo visual independente • Ainda não integrado ao servidor de Minecraft.</footer>
+<script>
+const $=id=>document.getElementById(id);
+const ores={DIAMOND:["💎","DIAMOND_ORE","diamantes"],EMERALD:["🟢","EMERALD_ORE","esmeraldas"],IRON:["⚙️","IRON_ORE","RAW_IRON"],GOLD:["🟨","GOLD_ORE","RAW_GOLD"],COPPER:["🟠","COPPER_ORE","RAW_COPPER"],COAL:["⬛","COAL_ORE","carvões"],REDSTONE:["🔴","REDSTONE_ORE","redstones"],LAPIS:["🔵","LAPIS_ORE","lápis-lazúli"],QUARTZ:["⚪","NETHER_QUARTZ_ORE","quartzos"]};
+let cfg={id:"diamond01",ore:"DIAMOND",amount:2,cooldown:30},cooling=false;
+function render(){
+ const o=ores[cfg.ore];$("block").textContent=o[0];$("blockname").textContent=o[1];
+ $("command").textContent="/rc create "+cfg.id+" "+cfg.ore+" "+cfg.amount+" "+cfg.cooldown;
+ $("behavior").textContent="Entregar "+cfg.amount+" "+o[2]+" quando o jogador quebrar o minério; regenerar após "+cfg.cooldown+" segundos.";
+}
+$("configure").addEventListener("click",()=>{
+ const id=$("id").value.trim().toLowerCase(),amount=Number($("amount").value),cooldown=Number($("cooldown").value);
+ if(!/^[a-z0-9_-]{1,32}$/.test(id)||!Number.isInteger(amount)||amount<1||amount>64||!Number.isInteger(cooldown)||cooldown<1||cooldown>3600){$("result").textContent="Confira ID, quantidade (1–64) e cooldown (1–3600).";return;}
+ cfg={id,ore:$("ore").value,amount,cooldown};cooling=false;$("block").classList.remove("cool");$("result").textContent="Configuração aplicada na demonstração.";render();
+});
+$("mine").addEventListener("click",()=>{
+ if(cooling){$("result").textContent="Bloco regenerando. Não há novos drops.";return;}
+ cooling=true;$("block").classList.add("cool");
+ $("result").textContent="Drop: "+cfg.amount+" × "+ores[cfg.ore][2]+". Bloco temporariamente indisponível.";
+ setTimeout(()=>{cooling=false;$("block").classList.remove("cool");$("result").textContent="Minério regenerado (tempo acelerado nesta demo).";},1600);
+});
+$("reset").addEventListener("click",()=>{$("id").value="diamond01";$("ore").value="DIAMOND";$("amount").value="2";$("cooldown").value="30";$("configure").click();});
+render();
+</script>
+</body>
+</html>
