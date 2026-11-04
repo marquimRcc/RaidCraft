@@ -74,6 +74,12 @@ A permissão `raidcraft.admin` é padrão para operadores (OP).
 
 Os geradores são salvos em `plugins/RaidCraft/generators.yml`. O painel `painel-demo.html` pode ser aberto no navegador, sem dependências, para ilustrar a configuração.
 
+## Instalar e testar no computador
+
+Para abrir um servidor Paper 1.21.11 no **Windows ou Linux** e testar o plugin com um cliente Minecraft Java Edition conectado, consulte o [guia de preparação automática](docs/TESTAR-LOCALMENTE.md). Os scripts verificam os downloads, mantêm o servidor restrito a 127.0.0.1 e exigem aceitação explícita da EULA.
+
+**Atenção:** o teste real com cliente Minecraft conectado ainda precisa ser feito; a aprovação em CI não substitui essa etapa.
+
 ## Verificações automatizadas
 
 A pipeline usa Java 21 e Gradle, verifica os arquivos e o bytecode do JAR e executa um segundo plugin, **exclusivo para CI**, em um servidor Paper 1.21.11 temporário.
