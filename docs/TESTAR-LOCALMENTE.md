@@ -49,7 +49,7 @@ Retire `-AcceptEula -Start` para preparar os arquivos sem aceitar os termos ou i
 ### Onde ficam os arquivos?
 
 - Linux: `~/RaidCraft-Lab/server/`
-- Windows: `%USERPROFILE%\\RaidCraft-Lab\\server\\`
+- Windows: `%USERPROFILE%\RaidCraft-Lab\server\`
 - Plugin: `server/plugins/RaidCraft-0.1.0.jar`
 - Log principal: `server/logs/latest.log`
 - Persistência: `server/plugins/RaidCraft/generators.yml`

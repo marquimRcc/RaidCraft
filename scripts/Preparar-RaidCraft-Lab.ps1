@@ -13,7 +13,7 @@ foreach ($command in @('java', 'javac')) {
         throw "Required Java 21 JDK command not found: $command. Install https://adoptium.net/temurin/releases/?version=21"
     }
 }
-$javaVersion = (& java -version 2>&1 | Out-String)
+$javaVersion = (& java --version | Out-String)
 $javacVersion = (& javac -version 2>&1 | Out-String)
 if ($javaVersion -notmatch 'version "21(\.|")|(^|\n)(openjdk|java) 21(\.|\s)' -or
     $javacVersion -notmatch 'javac 21(\.|(\r?\n)|$)') {
