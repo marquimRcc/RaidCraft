@@ -1,0 +1,49 @@
+name: Validate Paper JAR
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+      - name: Configure Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Configure Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14'
+      - name: Build the plugin
+        run: gradle --no-daemon clean build
+      - name: Validate JAR contents and Java compatibility
+        shell: bash
+        run: |
+          set -euo pipefail
+          JAR="build/libs/RaidCraft-0.1.0.jar"
+          test -s "$JAR"
+          for entry in             plugin.yml             config.yml             dev/raidcraft/RaidCraftPlugin.class             dev/raidcraft/command/RaidCraftCommand.class             dev/raidcraft/listener/GeneratorListener.class             dev/raidcraft/model/Generator.class             dev/raidcraft/model/OreKind.class             dev/raidcraft/service/GeneratorService.class             dev/raidcraft/storage/GeneratorRepository.class; do
+            jar tf "$JAR" | grep -Fxq "$entry"
+          done
+          unzip -p "$JAR" plugin.yml | grep -Fxq 'name: RaidCraft'
+          unzip -p "$JAR" plugin.yml | grep -Fxq 'main: dev.raidcraft.RaidCraftPlugin'
+          javap -verbose -classpath "$JAR" dev.raidcraft.RaidCraftPlugin | grep -Eq 'major version: 65'
+          echo "RaidCraft plugin packaged correctly for Java 21."
+      - name: Publish verified JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: RaidCraft-verified-plugin
+          path: build/libs/RaidCraft-0.1.0.jar
+          if-no-files-found: error
+          retention-days: 14
